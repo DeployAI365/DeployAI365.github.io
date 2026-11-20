@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>2026年10月报销汇总</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f7fb;
+      --card: #ffffff;
+      --line: #d8dce8;
+      --ink: #162033;
+      --muted: #5b6474;
+      --brand: #1447e6;
+      --soft: #eef3ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, #dde8ff 0, transparent 28%),
+        linear-gradient(180deg, #fbfcff 0%, var(--bg) 100%);
+    }
+    .page {
+      width: min(1280px, calc(100vw - 32px));
+      margin: 24px auto 48px;
+    }
+    header, section {
+      background: rgba(255,255,255,0.94);
+      border: 1px solid rgba(216,220,232,0.9);
+      border-radius: 20px;
+      box-shadow: 0 14px 32px rgba(22, 32, 51, 0.06);
+      padding: 24px;
+      margin-bottom: 20px;
+      backdrop-filter: blur(10px);
+    }
+    h1, h2, h3, p { margin: 0; }
+    h1 { font-size: 30px; }
+    h2 { font-size: 22px; margin-bottom: 16px; }
+    h3 { font-size: 18px; margin-bottom: 16px; }
+    .section-subtitle {
+      font-size: 16px;
+      font-weight: 800;
+      color: #27405f;
+      margin: 8px 0 14px;
+      padding-left: 12px;
+      border-left: 4px solid #8db8ff;
+    }
+    .header-meta {
+      margin-top: 10px;
+      color: var(--muted);
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+    }
+    .notice {
+      margin-top: 14px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: #fff8ea;
+      border: 1px solid #ffd28a;
+      color: #6f4b00;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .stat {
+      background: var(--soft);
+      border: 1px solid #d8e3ff;
+      border-radius: 16px;
+      padding: 16px;
+    }
+    .stat-label {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+    .stat-value {
+      font-size: 26px;
+      font-weight: 700;
+    }
+    .table-wrap {
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 1080px;
+    }
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 12px 10px;
+      text-align: left;
+      vertical-align: top;
+      font-size: 14px;
+    }
+    th {
+      background: #f8faff;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+    .amount {
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+    .invoice-card {
+      display: grid;
+      grid-template-columns: minmax(260px, 380px) 1fr;
+      gap: 20px;
+      padding: 20px 0;
+      border-top: 1px solid var(--line);
+    }
+    .invoice-card.emphasis {
+      background: linear-gradient(180deg, rgba(255,244,220,0.72) 0%, rgba(255,255,255,0) 100%);
+      border-radius: 18px;
+      padding: 20px;
+      border: 1px solid #ffd28a;
+      margin: 10px 0;
+    }
+    .invoice-card:first-of-type {
+      border-top: 0;
+      padding-top: 0;
+    }
+    .preview {
+      width: 100%;
+      height: auto;
+      display: block;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+    }
+    .payment-evidence {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .payment-originals {
+      display: grid;
+      gap: 10px;
+    }
+    .payment-original-link {
+      display: block;
+      padding: 0;
+      background: transparent;
+      border: 0;
+    }
+    .payment-original {
+      width: 100%;
+      height: auto;
+      display: block;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fff;
+      box-shadow: 0 8px 24px rgba(22, 32, 51, 0.08);
+    }
+    .payment-downloads {
+      margin-top: 0;
+    }
+    .fallback {
+      min-height: 280px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+      color: var(--muted);
+      background: #f8faff;
+      border-radius: 14px;
+      border: 1px dashed var(--line);
+    }
+    .payment-shot {
+      min-height: 280px;
+      border-radius: 18px;
+      border: 1px solid #d7e8f0;
+      padding: 18px;
+      background: linear-gradient(180deg, #edf8fc 0%, #ffffff 100%);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
+    }
+    .shot-top, .hotel-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+    .shot-app {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.86);
+      color: #314257;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .shot-amount {
+      font-size: 22px;
+      font-weight: 800;
+      color: #ef8b2e;
+    }
+    .shot-status {
+      font-size: 30px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+    .shot-subtitle {
+      color: var(--muted);
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+    .rail-grid {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 10px;
+      align-items: center;
+      background: rgba(255,255,255,0.88);
+      border: 1px solid #dde6f2;
+      border-radius: 16px;
+      padding: 16px;
+    }
+    .rail-time {
+      font-size: 34px;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+    .rail-city {
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .rail-mid {
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .rail-ticket {
+      margin-top: 14px;
+      background: rgba(255,255,255,0.88);
+      border: 1px solid #dde6f2;
+      border-radius: 16px;
+      padding: 14px 16px;
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: center;
+    }
+    .muted {
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .seat {
+      font-size: 18px;
+      font-weight: 800;
+    }
+    .hotel-shot {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: linear-gradient(180deg, #fbfbfd 0%, #ffffff 100%);
+    }
+    .hotel-name {
+      font-size: 24px;
+      font-weight: 800;
+      line-height: 1.35;
+      margin-bottom: 12px;
+    }
+    .hotel-meta, .hotel-room {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: #39465a;
+      background: rgba(255,255,255,0.86);
+      border: 1px solid #e5e8f0;
+      border-radius: 14px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      font-size: 16px;
+      font-weight: 600;
+    }
+    .settlement-shot {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: linear-gradient(180deg, #f5f9ff 0%, #ffffff 100%);
+    }
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .meta-item {
+      background: #fbfcff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+    }
+    .meta-label {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .meta-value {
+      font-size: 14px;
+      line-height: 1.5;
+      word-break: break-all;
+    }
+    .attachments {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      margin-left: 10px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      vertical-align: middle;
+    }
+    .emphasis-badge {
+      background: #fff1d6;
+      color: #b86800;
+      border: 1px solid #ffd28a;
+    }
+    .file-link {
+      color: var(--brand);
+      text-decoration: none;
+      background: #eef3ff;
+      border: 1px solid #d8e3ff;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 13px;
+    }
+    .support-note {
+      color: var(--muted);
+      margin-bottom: 14px;
+      line-height: 1.6;
+    }
+    .table-highlight td {
+      background: #fff8ea;
+    }
+    @media (max-width: 860px) {
+      .page {
+        width: min(100vw - 20px, 1280px);
+        margin: 10px auto 28px;
+      }
+      header, section {
+        border-radius: 16px;
+        padding: 18px;
+      }
+      .invoice-card {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <h1>2026年10月报销汇总</h1>
+      <div class="header-meta">
+        <span>生成时间：2026-11-20 15:29:11</span>
+        <span>月份：2026年10月</span>
+        <span>购买方：武汉非凡互动网络科技有限公司</span>
+        <span>税号：91420100MA49BW077B</span>
+        <span><a class="file-link" href="./2026-10%E6%8A%A5%E9%94%80%E6%98%8E%E7%BB%86.csv" download="2026-10报销明细.csv">下载本月报销明细 CSV</a></span>
+      </div>
+      <div class="notice">报销金额仅按发票金额统计。高铁优先按支付明细中的车票实付金额匹配；经用户确认保留的无付款截图车票，会明确标注并按发票金额计入。酒店按订单付款金额匹配；未匹配上的发票不纳入报销文档。</div>
+    </header>
+    <section class="summary"><div class="stat"><div class="stat-label">可报销发票</div><div class="stat-value">4</div></div><div class="stat"><div class="stat-label">辅助单据</div><div class="stat-value">0</div></div><div class="stat"><div class="stat-label">报销总额（按发票）</div><div class="stat-value">¥5682.50</div></div><div class="stat"><div class="stat-label">房租发票</div><div class="stat-value">¥3800.00</div></div><div class="stat"><div class="stat-label">高铁发票</div><div class="stat-value">¥1882.50</div></div></section>
+    <section><h2>费用时间线与发票对应</h2><h3 class="section-subtitle">高铁发票</h3><article class="invoice-card"><div><div class="payment-evidence"><div class="payment-originals"><a class="payment-original-link" href="https://media.deployai365.com/uploads/1795152416_codex-clipboard-b392bfa4-0d71-48ff-9803-39718f187102.png" target="_blank" rel="noopener noreferrer"><img class="payment-original" src="https://media.deployai365.com/uploads/1795152416_codex-clipboard-b392bfa4-0d71-48ff-9803-39718f187102.png" alt="codex-clipboard-b392bfa4-0d71-48ff-9803-39718f187102.png"></a></div><div class="attachments payment-downloads"><a class="file-link" href="https://media.deployai365.com/uploads/1795152416_codex-clipboard-b392bfa4-0d71-48ff-9803-39718f187102.png" target="_blank" rel="noopener noreferrer">codex-clipboard-b392bfa4-0d71-48ff-9803-39718f187102.png</a></div></div><div class="payment-shot rail-shot"><div class="shot-top"><span class="shot-app">去哪儿旅行</span><span class="shot-amount">¥627.50</span></div><div class="shot-status">出票完成</div><div class="shot-subtitle">取票号：-</div><div class="rail-grid"><div><div class="rail-time">09:00</div><div class="rail-city">武汉</div></div><div class="rail-mid"><div>-</div><div>G391</div></div><div><div class="rail-time">13:01</div><div class="rail-city">深圳北</div></div></div><div class="rail-ticket"><div><strong>陆昌圣</strong><div class="muted">二等座</div></div><div class="seat">08车07D号</div></div></div></div><div class="invoice-body"><h3>10月01日 武汉 -&gt; 深圳北 G391</h3><div class="meta-grid"><div class="meta-item"><div class="meta-label">付款来源</div><div class="meta-value">去哪儿旅行付款截图</div></div><div class="meta-item"><div class="meta-label">发生日期</div><div class="meta-value">2026-10-01</div></div><div class="meta-item"><div class="meta-label">支付时间</div><div class="meta-value">-</div></div><div class="meta-item"><div class="meta-label">车票实付金额</div><div class="meta-value">¥627.50</div></div><div class="meta-item"><div class="meta-label">订单实付总额</div><div class="meta-value">¥627.50</div></div><div class="meta-item"><div class="meta-label">对应发票</div><div class="meta-value">26429165800007043817</div></div><div class="meta-item"><div class="meta-label">发票类型</div><div class="meta-value">高铁发票</div></div><div class="meta-item"><div class="meta-label">报销金额（按发票）</div><div class="meta-value">¥627.50</div></div><div class="meta-item"><div class="meta-label">项目说明</div><div class="meta-value">武汉站 -&gt; 深圳北站 G391 09:00开 二等座 08车07D号</div></div><div class="meta-item"><div class="meta-label">说明</div><div class="meta-value">出票完成页金额与铁路电子发票金额一致。</div></div></div><div class="attachments"><a class="file-link" href="https://media.deployai365.com/uploads/1795152420_电子发票-2cu5x12000uic8fjd3A8F.pdf" target="_blank" rel="noopener noreferrer">电子发票-2cu5x12000uic8fjd3A8F.pdf (PDF)</a></div></div></article><article class="invoice-card"><div><div class="payment-evidence"><div class="payment-originals"><a class="payment-original-link" href="https://media.deployai365.com/uploads/1795152408_codex-clipboard-6ecd1c06-021a-4604-a984-3fea97e7588c.png" target="_blank" rel="noopener noreferrer"><img class="payment-original" src="https://media.deployai365.com/uploads/1795152408_codex-clipboard-6ecd1c06-021a-4604-a984-3fea97e7588c.png" alt="codex-clipboard-6ecd1c06-021a-4604-a984-3fea97e7588c.png"></a></div><div class="attachments payment-downloads"><a class="file-link" href="https://media.deployai365.com/uploads/1795152408_codex-clipboard-6ecd1c06-021a-4604-a984-3fea97e7588c.png" target="_blank" rel="noopener noreferrer">codex-clipboard-6ecd1c06-021a-4604-a984-3fea97e7588c.png</a></div></div><div class="payment-shot rail-shot"><div class="shot-top"><span class="shot-app">去哪儿旅行</span><span class="shot-amount">¥627.50</span></div><div class="shot-status">出票完成</div><div class="shot-subtitle">取票号：-</div><div class="rail-grid"><div><div class="rail-time">12:35</div><div class="rail-city">深圳北</div></div><div class="rail-mid"><div>-</div><div>G394</div></div><div><div class="rail-time">16:34</div><div class="rail-city">武汉</div></div></div><div class="rail-ticket"><div><strong>陆昌圣</strong><div class="muted">二等座</div></div><div class="seat">02车07D号</div></div></div></div><div class="invoice-body"><h3>10月07日 深圳北 -&gt; 武汉 G394</h3><div class="meta-grid"><div class="meta-item"><div class="meta-label">付款来源</div><div class="meta-value">去哪儿旅行付款截图</div></div><div class="meta-item"><div class="meta-label">发生日期</div><div class="meta-value">2026-10-07</div></div><div class="meta-item"><div class="meta-label">支付时间</div><div class="meta-value">-</div></div><div class="meta-item"><div class="meta-label">车票实付金额</div><div class="meta-value">¥627.50</div></div><div class="meta-item"><div class="meta-label">订单实付总额</div><div class="meta-value">¥627.50</div></div><div class="meta-item"><div class="meta-label">对应发票</div><div class="meta-value">26449165860006443353</div></div><div class="meta-item"><div class="meta-label">发票类型</div><div class="meta-value">高铁发票</div></div><div class="meta-item"><div class="meta-label">报销金额（按发票）</div><div class="meta-value">¥627.50</div></div><div class="meta-item"><div class="meta-label">项目说明</div><div class="meta-value">深圳北站 -&gt; 武汉站 G394 12:35开 二等座 02车07D号</div></div><div class="meta-item"><div class="meta-label">说明</div><div class="meta-value">出票完成页金额与铁路电子发票金额一致。</div></div></div><div class="attachments"><a class="file-link" href="https://media.deployai365.com/uploads/1795152419_电子发票-2cu1j12000uic8gujB97C.pdf" target="_blank" rel="noopener noreferrer">电子发票-2cu1j12000uic8gujB97C.pdf (PDF)</a></div></div></article><article class="invoice-card"><div><div class="payment-evidence"><div class="payment-originals"><a class="payment-original-link" href="https://media.deployai365.com/uploads/1795152407_codex-clipboard-217b2f3e-5263-4b48-88c8-9f6bf9e04fb5.png" target="_blank" rel="noopener noreferrer"><img class="payment-original" src="https://media.deployai365.com/uploads/1795152407_codex-clipboard-217b2f3e-5263-4b48-88c8-9f6bf9e04fb5.png" alt="codex-clipboard-217b2f3e-5263-4b48-88c8-9f6bf9e04fb5.png"></a></div><div class="attachments payment-downloads"><a class="file-link" href="https://media.deployai365.com/uploads/1795152407_codex-clipboard-217b2f3e-5263-4b48-88c8-9f6bf9e04fb5.png" target="_blank" rel="noopener noreferrer">codex-clipboard-217b2f3e-5263-4b48-88c8-9f6bf9e04fb5.png</a></div></div><div class="payment-shot rail-shot"><div class="shot-top"><span class="shot-app">去哪儿旅行</span><span class="shot-amount">¥627.50</span></div><div class="shot-status">出票完成</div><div class="shot-subtitle">取票号：-</div><div class="rail-grid"><div><div class="rail-time">08:00</div><div class="rail-city">武汉</div></div><div class="rail-mid"><div>-</div><div>G389</div></div><div><div class="rail-time">12:09</div><div class="rail-city">深圳北</div></div></div><div class="rail-ticket"><div><strong>陆昌圣</strong><div class="muted">二等座</div></div><div class="seat">07车02D号</div></div></div></div><div class="invoice-body"><h3>10月25日 武汉 -&gt; 深圳北 G389</h3><div class="meta-grid"><div class="meta-item"><div class="meta-label">付款来源</div><div class="meta-value">去哪儿旅行付款截图</div></div><div class="meta-item"><div class="meta-label">发生日期</div><div class="meta-value">2026-10-25</div></div><div class="meta-item"><div class="meta-label">支付时间</div><div class="meta-value">-</div></div><div class="meta-item"><div class="meta-label">车票实付金额</div><div class="meta-value">¥627.50</div></div><div class="meta-item"><div class="meta-label">订单实付总额</div><div class="meta-value">¥627.50</div></div><div class="meta-item"><div class="meta-label">对应发票</div><div class="meta-value">26429165800007043819</div></div><div class="meta-item"><div class="meta-label">发票类型</div><div class="meta-value">高铁发票</div></div><div class="meta-item"><div class="meta-label">报销金额（按发票）</div><div class="meta-value">¥627.50</div></div><div class="meta-item"><div class="meta-label">项目说明</div><div class="meta-value">武汉站 -&gt; 深圳北站 G389 08:00开 二等座 07车02D号</div></div><div class="meta-item"><div class="meta-label">说明</div><div class="meta-value">改签后行程与铁路电子发票一致，按发票金额报销。</div></div></div><div class="attachments"><a class="file-link" href="https://media.deployai365.com/uploads/1795152420_电子发票-2cu4z12000uic7xf69B17.pdf" target="_blank" rel="noopener noreferrer">电子发票-2cu4z12000uic7xf69B17.pdf (PDF)</a></div></div></article><h3 class="section-subtitle">其他票据</h3><article class="invoice-card"><div><div class="payment-evidence"><div class="payment-originals"><a class="payment-original-link" href="https://media.deployai365.com/uploads/1795152413_codex-clipboard-7a7158b1-49ae-4772-ad26-886756589ff7.png" target="_blank" rel="noopener noreferrer"><img class="payment-original" src="https://media.deployai365.com/uploads/1795152413_codex-clipboard-7a7158b1-49ae-4772-ad26-886756589ff7.png" alt="codex-clipboard-7a7158b1-49ae-4772-ad26-886756589ff7.png"></a></div><div class="attachments payment-downloads"><a class="file-link" href="https://media.deployai365.com/uploads/1795152413_codex-clipboard-7a7158b1-49ae-4772-ad26-886756589ff7.png" target="_blank" rel="noopener noreferrer">codex-clipboard-7a7158b1-49ae-4772-ad26-886756589ff7.png</a></div></div><div class="payment-shot settlement-shot"><div class="shot-top"><span class="shot-app">辅助凭证</span><span class="shot-amount">¥4180.00</span></div><div class="hotel-name">武汉久伴房屋租赁有限公司</div><div class="hotel-meta"><span>10.07-11.06</span><span>结账单匹配</span></div></div></div><div class="invoice-body"><h3>10月07日-11月06日 房租</h3><div class="meta-grid"><div class="meta-item"><div class="meta-label">付款来源</div><div class="meta-value">房租账单截图</div></div><div class="meta-item"><div class="meta-label">发生日期</div><div class="meta-value">2026-10-07</div></div><div class="meta-item"><div class="meta-label">付款金额（参考）</div><div class="meta-value">¥4180.00</div></div><div class="meta-item"><div class="meta-label">对应发票</div><div class="meta-value">042002400105-00294437</div></div><div class="meta-item"><div class="meta-label">发票类型</div><div class="meta-value">房租发票</div></div><div class="meta-item"><div class="meta-label">报销金额（按发票）</div><div class="meta-value">¥3800.00</div></div><div class="meta-item"><div class="meta-label">项目说明</div><div class="meta-value">房租（2026.10.07-2026.11.06）</div></div><div class="meta-item"><div class="meta-label">说明</div><div class="meta-value">账单总额 4180.00 元，其中房租 3800.00 元与纸质发票匹配；客户服务费 380.00 元无对应发票，不计入报销。 付款金额与发票金额不同，通常为套餐、保险或附加服务导致。</div></div></div><div class="attachments"><a class="file-link" href="https://media.deployai365.com/uploads/1795159719_paper-rent-2026-10-00294437.jpg" target="_blank" rel="noopener noreferrer">paper-rent-2026-10-00294437.jpg (JPG)</a></div></div></article></section>
+    
+    <section><h2>报销明细</h2><div class="table-wrap"><table><thead><tr><th>序号</th><th>费用类型</th><th>发生日期</th><th>开票日期</th><th>业务日期</th><th>发票号码</th><th>销售方</th><th>项目说明</th><th>报销金额</th><th>税额</th><th>重点标注</th><th>付款凭证来源</th><th>付款时间</th><th>付款匹配金额</th><th>附件</th></tr></thead><tbody><tr><td>1</td><td>高铁发票</td><td>2026-10-01</td><td>2026-11-20</td><td>2026-10-01</td><td>26429165800007043817</td><td>中国铁路 / 铁路电子客票</td><td>武汉站 -&gt; 深圳北站 G391 09:00开 二等座 08车07D号</td><td class="amount">¥627.50</td><td class="amount"></td><td></td><td>去哪儿旅行付款截图</td><td></td><td class="amount">¥627.50</td><td><a class="file-link" href="https://media.deployai365.com/uploads/1795152420_电子发票-2cu5x12000uic8fjd3A8F.pdf" target="_blank" rel="noopener noreferrer">电子发票-2cu5x12000uic8fjd3A8F.pdf (PDF)</a></td></tr><tr><td>2</td><td>高铁发票</td><td>2026-10-07</td><td>2026-11-20</td><td>2026-10-07</td><td>26449165860006443353</td><td>中国铁路 / 铁路电子客票</td><td>深圳北站 -&gt; 武汉站 G394 12:35开 二等座 02车07D号</td><td class="amount">¥627.50</td><td class="amount"></td><td></td><td>去哪儿旅行付款截图</td><td></td><td class="amount">¥627.50</td><td><a class="file-link" href="https://media.deployai365.com/uploads/1795152419_电子发票-2cu1j12000uic8gujB97C.pdf" target="_blank" rel="noopener noreferrer">电子发票-2cu1j12000uic8gujB97C.pdf (PDF)</a></td></tr><tr><td>3</td><td>高铁发票</td><td>2026-10-25</td><td>2026-11-20</td><td>2026-10-25</td><td>26429165800007043819</td><td>中国铁路 / 铁路电子客票</td><td>武汉站 -&gt; 深圳北站 G389 08:00开 二等座 07车02D号</td><td class="amount">¥627.50</td><td class="amount"></td><td></td><td>去哪儿旅行付款截图</td><td></td><td class="amount">¥627.50</td><td><a class="file-link" href="https://media.deployai365.com/uploads/1795152420_电子发票-2cu4z12000uic7xf69B17.pdf" target="_blank" rel="noopener noreferrer">电子发票-2cu4z12000uic7xf69B17.pdf (PDF)</a></td></tr><tr><td>4</td><td>房租发票</td><td>2026-10-07</td><td>2026-10-15</td><td>2026-10-07</td><td>042002400105-00294437</td><td>李小燕（税务机关代开）</td><td>房租（2026.10.07-2026.11.06）</td><td class="amount">¥3800.00</td><td class="amount"></td><td></td><td>房租账单截图</td><td>2026-10-04 08:14:59</td><td class="amount">¥4180.00</td><td><a class="file-link" href="https://media.deployai365.com/uploads/1795159719_paper-rent-2026-10-00294437.jpg" target="_blank" rel="noopener noreferrer">paper-rent-2026-10-00294437.jpg (JPG)</a></td></tr></tbody></table></div></section>
+    <section><h2>发票展示与附件下载</h2><h3 class="section-subtitle">高铁发票</h3><article class="invoice-card"><div><a class="preview-link" href="https://media.deployai365.com/uploads/1795152420_电子发票-2cu5x12000uic8fjd3A8F.pdf" target="_blank" rel="noopener noreferrer"><img class="preview" src="./previews/%E7%94%B5%E5%AD%90%E5%8F%91%E7%A5%A8-2cu5x12000uic8fjd3A8F.pdf.png" alt="26429165800007043817 预览"></a></div><div class="invoice-body"><h3>高铁发票 / 26429165800007043817</h3><div class="meta-grid"><div class="meta-item"><div class="meta-label">序号</div><div class="meta-value">1</div></div><div class="meta-item"><div class="meta-label">费用类型</div><div class="meta-value">高铁发票</div></div><div class="meta-item"><div class="meta-label">发生日期</div><div class="meta-value">2026-10-01</div></div><div class="meta-item"><div class="meta-label">发票号码</div><div class="meta-value">26429165800007043817</div></div><div class="meta-item"><div class="meta-label">开票日期</div><div class="meta-value">2026-11-20</div></div><div class="meta-item"><div class="meta-label">业务日期</div><div class="meta-value">2026-10-01</div></div><div class="meta-item"><div class="meta-label">销售方</div><div class="meta-value">中国铁路 / 铁路电子客票</div></div><div class="meta-item"><div class="meta-label">项目说明</div><div class="meta-value">武汉站 -&gt; 深圳北站 G391 09:00开 二等座 08车07D号</div></div><div class="meta-item"><div class="meta-label">金额</div><div class="meta-value">¥627.50</div></div><div class="meta-item"><div class="meta-label">税额</div><div class="meta-value">-</div></div><div class="meta-item"><div class="meta-label">重点标注</div><div class="meta-value">-</div></div><div class="meta-item"><div class="meta-label">备注</div><div class="meta-value">-</div></div></div><div class="attachments"><a class="file-link" href="https://media.deployai365.com/uploads/1795152420_电子发票-2cu5x12000uic8fjd3A8F.pdf" target="_blank" rel="noopener noreferrer">电子发票-2cu5x12000uic8fjd3A8F.pdf (PDF)</a></div></div></article><article class="invoice-card"><div><a class="preview-link" href="https://media.deployai365.com/uploads/1795152419_电子发票-2cu1j12000uic8gujB97C.pdf" target="_blank" rel="noopener noreferrer"><img class="preview" src="./previews/%E7%94%B5%E5%AD%90%E5%8F%91%E7%A5%A8-2cu1j12000uic8gujB97C.pdf.png" alt="26449165860006443353 预览"></a></div><div class="invoice-body"><h3>高铁发票 / 26449165860006443353</h3><div class="meta-grid"><div class="meta-item"><div class="meta-label">序号</div><div class="meta-value">2</div></div><div class="meta-item"><div class="meta-label">费用类型</div><div class="meta-value">高铁发票</div></div><div class="meta-item"><div class="meta-label">发生日期</div><div class="meta-value">2026-10-07</div></div><div class="meta-item"><div class="meta-label">发票号码</div><div class="meta-value">26449165860006443353</div></div><div class="meta-item"><div class="meta-label">开票日期</div><div class="meta-value">2026-11-20</div></div><div class="meta-item"><div class="meta-label">业务日期</div><div class="meta-value">2026-10-07</div></div><div class="meta-item"><div class="meta-label">销售方</div><div class="meta-value">中国铁路 / 铁路电子客票</div></div><div class="meta-item"><div class="meta-label">项目说明</div><div class="meta-value">深圳北站 -&gt; 武汉站 G394 12:35开 二等座 02车07D号</div></div><div class="meta-item"><div class="meta-label">金额</div><div class="meta-value">¥627.50</div></div><div class="meta-item"><div class="meta-label">税额</div><div class="meta-value">-</div></div><div class="meta-item"><div class="meta-label">重点标注</div><div class="meta-value">-</div></div><div class="meta-item"><div class="meta-label">备注</div><div class="meta-value">-</div></div></div><div class="attachments"><a class="file-link" href="https://media.deployai365.com/uploads/1795152419_电子发票-2cu1j12000uic8gujB97C.pdf" target="_blank" rel="noopener noreferrer">电子发票-2cu1j12000uic8gujB97C.pdf (PDF)</a></div></div></article><article class="invoice-card"><div><a class="preview-link" href="https://media.deployai365.com/uploads/1795152420_电子发票-2cu4z12000uic7xf69B17.pdf" target="_blank" rel="noopener noreferrer"><img class="preview" src="./previews/%E7%94%B5%E5%AD%90%E5%8F%91%E7%A5%A8-2cu4z12000uic7xf69B17.pdf.png" alt="26429165800007043819 预览"></a></div><div class="invoice-body"><h3>高铁发票 / 26429165800007043819</h3><div class="meta-grid"><div class="meta-item"><div class="meta-label">序号</div><div class="meta-value">3</div></div><div class="meta-item"><div class="meta-label">费用类型</div><div class="meta-value">高铁发票</div></div><div class="meta-item"><div class="meta-label">发生日期</div><div class="meta-value">2026-10-25</div></div><div class="meta-item"><div class="meta-label">发票号码</div><div class="meta-value">26429165800007043819</div></div><div class="meta-item"><div class="meta-label">开票日期</div><div class="meta-value">2026-11-20</div></div><div class="meta-item"><div class="meta-label">业务日期</div><div class="meta-value">2026-10-25</div></div><div class="meta-item"><div class="meta-label">销售方</div><div class="meta-value">中国铁路 / 铁路电子客票</div></div><div class="meta-item"><div class="meta-label">项目说明</div><div class="meta-value">武汉站 -&gt; 深圳北站 G389 08:00开 二等座 07车02D号</div></div><div class="meta-item"><div class="meta-label">金额</div><div class="meta-value">¥627.50</div></div><div class="meta-item"><div class="meta-label">税额</div><div class="meta-value">-</div></div><div class="meta-item"><div class="meta-label">重点标注</div><div class="meta-value">-</div></div><div class="meta-item"><div class="meta-label">备注</div><div class="meta-value">-</div></div></div><div class="attachments"><a class="file-link" href="https://media.deployai365.com/uploads/1795152420_电子发票-2cu4z12000uic7xf69B17.pdf" target="_blank" rel="noopener noreferrer">电子发票-2cu4z12000uic7xf69B17.pdf (PDF)</a></div></div></article><h3 class="section-subtitle">其他票据</h3><article class="invoice-card"><div><a class="preview-link" href="https://media.deployai365.com/uploads/1795159719_paper-rent-2026-10-00294437.jpg" target="_blank" rel="noopener noreferrer"><img class="preview" src="./previews/paper-rent-2026-10-00294437.jpg" alt="042002400105-00294437 预览"></a></div><div class="invoice-body"><h3>房租发票 / 042002400105-00294437</h3><div class="meta-grid"><div class="meta-item"><div class="meta-label">序号</div><div class="meta-value">4</div></div><div class="meta-item"><div class="meta-label">费用类型</div><div class="meta-value">房租发票</div></div><div class="meta-item"><div class="meta-label">发生日期</div><div class="meta-value">2026-10-07</div></div><div class="meta-item"><div class="meta-label">发票号码</div><div class="meta-value">042002400105-00294437</div></div><div class="meta-item"><div class="meta-label">开票日期</div><div class="meta-value">2026-10-15</div></div><div class="meta-item"><div class="meta-label">业务日期</div><div class="meta-value">2026-10-07</div></div><div class="meta-item"><div class="meta-label">销售方</div><div class="meta-value">李小燕（税务机关代开）</div></div><div class="meta-item"><div class="meta-label">项目说明</div><div class="meta-value">房租（2026.10.07-2026.11.06）</div></div><div class="meta-item"><div class="meta-label">金额</div><div class="meta-value">¥3800.00</div></div><div class="meta-item"><div class="meta-label">税额</div><div class="meta-value">-</div></div><div class="meta-item"><div class="meta-label">重点标注</div><div class="meta-value">-</div></div><div class="meta-item"><div class="meta-label">备注</div><div class="meta-value">湖北增值税普通发票；纸质发票照片。</div></div></div><div class="attachments"><a class="file-link" href="https://media.deployai365.com/uploads/1795159719_paper-rent-2026-10-00294437.jpg" target="_blank" rel="noopener noreferrer">paper-rent-2026-10-00294437.jpg (JPG)</a></div></div></article></section>
+    
+  </main>
+</body>
+</html>
